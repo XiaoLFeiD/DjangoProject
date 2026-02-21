@@ -1,0 +1,4 @@
+#数据库模块 这里增加表
+更改django自带的数据库后需执行或者是创建好数据表后在admin注册好后执行
+python manage.py makemigrations
+python manage.py migrate
