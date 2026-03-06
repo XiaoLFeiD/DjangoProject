@@ -38,11 +38,3 @@ __screenshots__/
 # Vite
 *.timestamp-*-*.mjs
 
-__pycache__/
-*.py[cod]
-.idea/
-db.sqlite3
-media/
-staticfiles/
-static/
-*.env
