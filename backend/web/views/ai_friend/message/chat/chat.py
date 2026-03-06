@@ -2,11 +2,33 @@ import json
 import asyncio
 from django.http import StreamingHttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from langchain_core.messages import HumanMessage, BaseMessageChunk, BaseMessage
+from langchain_core.messages import HumanMessage, BaseMessageChunk, BaseMessage, SystemMessage, AIMessage
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from asgiref.sync import sync_to_async
-from web.models.aifriend import AIFriend, AIMessage
+from web.models.aifriend import AIFriend, AIFriendMessage, SystemPrompt
 from web.views.ai_friend.message.chat.graph import ChatGraph
+
+@sync_to_async
+def add_system_prompt(state, friend):
+    msgs = state['messages']
+    system_prompts = SystemPrompt.objects.filter(title='回复').order_by('order_number')
+    prompt = ''
+    for sp in system_prompts:
+        prompt += sp.prompt
+    prompt += f'\n【角色性格】\n{friend.character.profile}\n'
+    return {'messages': [SystemMessage(prompt)] + msgs}
+
+@sync_to_async
+def add_recent_messages(state, friend):
+    msgs = state['messages']
+    message_raw = list(AIFriendMessage.objects.filter(friend=friend).order_by('-id')[:10])
+    message_raw.reverse()
+    messages = []
+    for m in message_raw:
+        messages.append(HumanMessage(m.user_message))
+        messages.append(AIMessage(m.output))
+    return {'messages': msgs[:1] + messages + msgs[-1:]}
+
 
 @csrf_exempt
 async def ai_message_chat_view(request):
@@ -33,6 +55,8 @@ async def ai_message_chat_view(request):
 
     app = ChatGraph.create_app()
     inputs = {'messages': [HumanMessage(message)]}
+    inputs = await add_system_prompt(inputs, friend)
+    inputs = await add_recent_messages(inputs, friend)
 
     async def event_stream():
         full_output = ''
@@ -59,7 +83,7 @@ async def ai_message_chat_view(request):
             output_tokens = full_usage.get('output_tokens', 0)
             total_tokens = full_usage.get('total_tokens', 0)
 
-            await AIMessage.objects.acreate(
+            await AIFriendMessage.objects.acreate(
                 friend=friend,
                 user_message=message[:500],
                 input=json.dumps(

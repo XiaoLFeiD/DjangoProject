@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from web.models.aifriend import AIMessage
+from web.models.aifriend import AIFriendMessage
 
 
 class GetHistoryAPIView(APIView):
@@ -11,7 +11,7 @@ class GetHistoryAPIView(APIView):
         try:
             last_message_id = int(request.query_params.get('last_message_id'))
             friend_id = request.query_params.get('friend_id')
-            queryset = AIMessage.objects.filter(friend_id=friend_id, friend__me__user=request.user)
+            queryset = AIFriendMessage.objects.filter(friend_id=friend_id, friend__me__user=request.user)
             if last_message_id > 0:
                 queryset = queryset.filter(pk__lt=last_message_id)
             messages_raw = queryset.order_by('-id')[:1]
