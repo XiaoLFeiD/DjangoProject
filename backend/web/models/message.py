@@ -26,8 +26,8 @@ class Message(models.Model):
     mtype = models.CharField(max_length=20, choices=MESSAGE_TYPE, default='text')
     content = models.TextField()
 
-    create_time = models.DateTimeField(default=now())
-    update_time = models.DateTimeField(default=now())
+    create_time = models.DateTimeField(default=now)
+    update_time = models.DateTimeField(default=now)
     is_deleted = models.BooleanField(default=False)
 
     class Meta:
@@ -36,4 +36,4 @@ class Message(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.sender.user.username} - {self.create_time.strftime('%Y-%m-%d %H:%M:%S')}'
+        return f'{self.sender.user.username} - {self.create_time.strftime("%Y-%m-%d %H:%M:%S")}'

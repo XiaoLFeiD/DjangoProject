@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from web.models.aifriend import AIFriend
+from web.models.aifriend import AIFriend, AIMessage
 from web.models.character import Character
 from web.models.conversation import Conversation
 from web.models.conversion_member import ConversationMember
@@ -38,4 +38,9 @@ class MessageAdmin(admin.ModelAdmin):
 @admin.register(Friend)
 class FriendAdmin(admin.ModelAdmin):
     raw_id_fields = ("user", "friend",)
+
+@admin.register(AIMessage)
+class AIMessageAdmin(admin.ModelAdmin):
+    raw_id_fields = ('friend',)
+
 

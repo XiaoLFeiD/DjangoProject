@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Application definition
 
@@ -172,3 +176,5 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
+# 添加默认主键类型
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

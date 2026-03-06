@@ -25,7 +25,7 @@ class ConversationMember(models.Model):
         blank=True
     )
 
-    join_time = models.DateTimeField(default=now())
+    join_time = models.DateTimeField(default=now)
 
     class Meta:
         unique_together = ('conversation', 'user')

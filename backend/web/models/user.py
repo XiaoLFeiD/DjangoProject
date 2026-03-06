@@ -15,4 +15,4 @@ class UserProfile(models.Model):
     create_time = models.DateTimeField(default=now) #now为当前时区 使用localtime转换为当前时区的时间
     update_time = models.DateTimeField(default=now)
     def __str__(self):
-        return f'{self.user.username} - {localtime(self.create_time).strftime('%Y-%m-%d %H:%M:%S')}'
+        return f'{self.user.username} - {localtime(self.create_time).strftime("%Y-%m-%d %H:%M:%S")}'

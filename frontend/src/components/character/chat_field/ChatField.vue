@@ -2,14 +2,42 @@
 
 import InputField from "@/components/character/chat_field/input_field/InputField.vue";
 import CharacterPhotoField from "@/components/character/chat_field/character_photo_field/CharacterPhotoField.vue";
-import {computed, useTemplateRef} from "vue";
+import {computed, nextTick, ref, useTemplateRef} from "vue";
+import Character from "@/components/character/Character.vue";
+import ChatHistory from "@/components/character/chat_field/chat_history/ChatHistory.vue";
 
 const props = defineProps(['ai_friend'])
 const modalRef = useTemplateRef('modal-ref')
 
-function showModal(){
+const inputRef = useTemplateRef('input-ref')
+
+const chatHistoryRef = useTemplateRef('chat-history-ref')
+const history = ref([])
+
+
+async function showModal(){
   modalRef.value.showModal()
+
+  await nextTick()
+
+  inputRef.value.focus()
+
 }
+
+function handlePushBackMessage(msg) {
+  history.value.push(msg)
+  chatHistoryRef.value.scrollToBottom()
+}
+
+function handleAddToLastMessage(delta) {
+  history.value.at(-1).content += delta
+  chatHistoryRef.value.scrollToBottom()
+}
+
+function handlePushFrontMessage(msg) {
+  history.value.unshift(msg)
+}
+
 
 const modalStyle = computed(() => {
   if(props.ai_friend){
@@ -32,7 +60,22 @@ defineExpose({
 <dialog ref="modal-ref" class="modal">
     <div class="modal-box w-90 h-150" :style="modalStyle">
       <button @click="modalRef.close()" class="btn btn-sm btn-circle btn-ghost bg-transparent absolute right-1 top-1">✕</button>
-      <InputField />
+      <ChatHistory
+          ref="chat-history-ref"
+          v-if="ai_friend"
+          :history="history"
+          :friendId="ai_friend.id"
+          :character="ai_friend.character"
+          @pushFrontMessage="handlePushFrontMessage"
+      />
+      <InputField
+          v-if="ai_friend"
+          ref="input-ref"
+          :friendId="ai_friend.id"
+          @pushBackMessage="handlePushBackMessage"
+          @addToLastMessage="handleAddToLastMessage"
+
+      />
       <CharacterPhotoField v-if="ai_friend" :character="ai_friend.character" />
     </div>
   </dialog>
