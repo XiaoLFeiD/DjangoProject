@@ -7,6 +7,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from asgiref.sync import sync_to_async
 from web.models.aifriend import AIFriend, AIFriendMessage, SystemPrompt
 from web.views.ai_friend.message.chat.graph import ChatGraph
+from web.views.ai_friend.message.memory.update import update_memory
+
 
 @sync_to_async
 def add_system_prompt(state, friend):
@@ -16,6 +18,7 @@ def add_system_prompt(state, friend):
     for sp in system_prompts:
         prompt += sp.prompt
     prompt += f'\n【角色性格】\n{friend.character.profile}\n'
+    prompt += f'【长期记忆】\n{friend.memory}\n'
     return {'messages': [SystemMessage(prompt)] + msgs}
 
 @sync_to_async
@@ -44,7 +47,7 @@ async def ai_message_chat_view(request):
             user, _ = user_auth_tuple
             data = json.loads(request.body)
             f_id, msg_text = data.get('friend_id'), data.get('message', '').strip()
-            friend = AIFriend.objects.filter(pk=f_id, me__user=user).first()
+            friend = AIFriend.objects.select_related('character').filter(pk=f_id, me__user=user).first()
             return user, friend, msg_text
         except: return None, None, None
 
@@ -96,9 +99,14 @@ async def ai_message_chat_view(request):
                 total_tokens=total_tokens,
             )
             # print(f"\n消息已成功异步保存到数据库，Token 统计: {full_usage}")
+            msg_count = await AIFriendMessage.objects.filter(friend=friend).acount()
+            if msg_count % 1 == 0:  # 你设定的逻辑
+                # 调用上面定义的异步更新函数
+                await update_memory(friend)
         except Exception as e:
             print(f"\n流错误: {str(e)}")
             yield f'data: {json.dumps({"error": str(e)})}\n\n'
+
 
     response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
     response['Cache-Control'] = 'no-cache'
