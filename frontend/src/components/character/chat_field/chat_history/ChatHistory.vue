@@ -27,6 +27,13 @@ function checkSentinelVisible() {  // 判断哨兵是否能被看到
   return sentinelRect.top < scrollRect.bottom && sentinelRect.bottom > scrollRect.top
 }
 
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 async function loadMore(){
     if (isLoading || !hasMessages) return
     isLoading = true
@@ -55,15 +62,26 @@ async function loadMore(){
           const oldTop = scrollRef.value.scrollTop
 
           for (const m of newMessages) {
+            // emit('pushFrontMessage', {
+            //   role: 'ai',
+            //   content: m.output,
+            //   id: crypto.randomUUID(),
+            // })
+            // emit('pushFrontMessage', {
+            //   role: 'user',
+            //   content: m.user_message,
+            //   id: crypto.randomUUID(),
+            // })
+
             emit('pushFrontMessage', {
               role: 'ai',
               content: m.output,
-              id: crypto.randomUUID(),
+              id: generateUUID(),
             })
             emit('pushFrontMessage', {
               role: 'user',
               content: m.user_message,
-              id: crypto.randomUUID(),
+              id: generateUUID(),
             })
             lastMessageId = m.id
           }

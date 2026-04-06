@@ -23,13 +23,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-2!sx2qt-hfr4_(f!ki#)i&mqni6-t00dmmcmyj@mr5_h8(76up"
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# True开发 False生产
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '47.105.91.154']
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+import mimetypes
+
+mimetypes.add_type("application/javascript", ".mjs", True)
 
 
 # Application definition
@@ -126,10 +132,24 @@ USE_TZ = True
 #设置static和media静态文件路径
 STATIC_URL='static/'
 #STATIC_ROOT=BASE_DIR/'statiC'#生产阶段使用
-STATICFILES_DIRS=[
-    BASE_DIR /'static',
-]
-MEDIA_URL='http://127.0.0.1:8000/media/'
+# STATICFILES_DIRS=[
+#     BASE_DIR /'static',
+# ]
+
+if not DEBUG:
+    STATIC_ROOT = BASE_DIR / 'static'  # 生产阶段使用
+else:
+    STATICFILES_DIRS = [  # 开发阶段使用，生产阶段需要注释掉
+        BASE_DIR / 'static',
+    ]
+
+
+# MEDIA_URL='http://127.0.0.1:8000/media/'
+if DEBUG:
+    MEDIA_URL = 'http://127.0.0.1:8000/media/'
+else:
+    MEDIA_URL = 'http://47.105.91.154/media/'
+
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
@@ -150,6 +170,10 @@ SIMPLE_JWT ={
     'BLACKLIST_AFTER_ROTATION': True,
 
     'AUTH_HEADER_TYPES':('Bearer',),
+
+    # 为了纯ip访问 额外的配置
+    'AUTH_COOKIE_SECURE': False,   # 允许在 HTTP 环境下传输 Cookie (关键！)
+    'AUTH_COOKIE_SAMESITE': 'Lax', # 不要用 None，在 HTTP 下 None 会被浏览器直接拦截
 }
 
 #跨域
@@ -157,6 +181,7 @@ CORS_ALLOW_CREDENTIALS= True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://47.105.91.154",
 ]
 
 ASGI_APPLICATION = 'backend.asgi.application'

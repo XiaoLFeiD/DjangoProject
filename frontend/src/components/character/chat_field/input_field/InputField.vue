@@ -106,6 +106,13 @@ function focus() {
   inputRef.value.focus()
 }
 
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 async function handleSend(event, audio_msg){
     let content
     if (audio_msg) {
@@ -124,9 +131,11 @@ async function handleSend(event, audio_msg){
 
     message.value = ''
 
-    emit('pushBackMessage', {role: 'user', content: content, id: crypto.randomUUID()})
-    emit('pushBackMessage', {role: 'ai', content: '', id: crypto.randomUUID()})
+    // emit('pushBackMessage', {role: 'user', content: content, id: crypto.randomUUID()})
+    // emit('pushBackMessage', {role: 'ai', content: '', id: crypto.randomUUID()})
 
+    emit('pushBackMessage', {role: 'user', content: content, id: generateUUID()})
+    emit('pushBackMessage', {role: 'ai', content: '', id: generateUUID()})
 
     try{
       await streamApi('/api/ai_friend/messages/chat/chat/',{

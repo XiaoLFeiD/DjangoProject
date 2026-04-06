@@ -17,7 +17,7 @@ export const useChatStore = defineStore('chat',()=>{
         // 如果已存在开启的连接，不要重复创建
         if (socket.value && (socket.value.readyState === WebSocket.OPEN || socket.value.readyState === WebSocket.CONNECTING)) return;
 
-        const wsUrl = `ws://localhost:8000/ws/chat/${user.id}/`;
+        const wsUrl = `ws://47.105.91.154/ws/chat/${user.id}/`;
 
         // 连向个人频道。请确保这里的 user.id 确实是 UserProfile 的 ID
         socket.value = new WebSocket(wsUrl);
