@@ -55,9 +55,8 @@ const sendToBackend = async (arrayBuffer) => {
 
   try{
     // 将音频发送到后端
-    const res = await api.post('/api/ai_friend/messages/asr/', formData)
+    const res = await api.post('/api/ai_friend/messages/asr/asr/', formData)
     const data = res.data
-    console.log(data)
     if (data.result === 'success') {
       emit('send', null, data.text)
     }

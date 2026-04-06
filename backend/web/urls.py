@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 
-from web.views.ai_friend.message.asr.asr import ASRAPIView
-from web.views.ai_friend.message.chat.chat import  ai_message_chat_view
+from web.views.ai_friend.message.asr.asr import asr_process_view
+from web.views.ai_friend.message.chat.chat import ai_message_chat_tts_view #, ai_message_chat_view
 from web.views.ai_friend.message.get_history import GetHistoryAPIView
 from web.views.create.character.create import CreateCharacterApiView
 from web.views.create.character.get_list import GetListCharacterAPIView
@@ -45,11 +45,11 @@ urlpatterns =[
     path('api/friend/search_list/',SearchListFriendAPIView.as_view()),
     path('api/friend/get_friend_list/',GetFriendListAPIView.as_view()),
     path('api/friend/messages/',FriendMessagesAPIView.as_view()),
-    # 因为有Daphne 采用下述方法
-    path('api/ai_friend/messages/chat/chat/',ai_message_chat_view),
-    path('api/ai_friend/messages/get_history/',GetHistoryAPIView.as_view()),
-
-    path('api/ai_friend/messages/asr/',ASRAPIView.as_view()),
+    path('api/ai_friend/messages/get_history/', GetHistoryAPIView.as_view()),
+    # 因为有Daphne 采用下述异步方法 不在使用DRF
+    # path('api/ai_friend/messages/chat/chat/',ai_message_chat_view), 这是语音未合成之前的代码
+    path('api/ai_friend/messages/chat/chat/',ai_message_chat_tts_view), # 这是语音合成之后的代码
+    path('api/ai_friend/messages/asr/asr/',asr_process_view),
     path('', index),
     #匹配任意路由，即接受前端的任意路由
     #在前端任意路径下刷新时，django都自动路由到根路径下，剩下的路由交由前端处理。
