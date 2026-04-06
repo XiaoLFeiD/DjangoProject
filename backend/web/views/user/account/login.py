@@ -33,8 +33,8 @@ class LoginAPIView(APIView):
                     value=str(refresh),
                     httponly=True,
                     samesite='Lax',
-                    # secure=True,
-                    secure=False,
+                    secure=True,
+                    # secure=False,
                     max_age=86400 * 7,
                 )
                 return response

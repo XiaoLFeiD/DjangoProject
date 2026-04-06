@@ -35,9 +35,9 @@ class RegisterApiView(APIView):
                 value=str(refresh),
                 httponly=True,
                 samesite='Lax',
-                # secure=True,
+                secure=True,
                 # 为了纯ip访问 额外设置
-                secure=False,
+                # secure=False,
                 max_age=86400 * 7,
             )
             return response
