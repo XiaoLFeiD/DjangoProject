@@ -9,6 +9,7 @@ import {useUserStore} from "@/stores/user.js";
 import {base64ToFile} from "@/js/utils/base64_to_file.js";
 import api from "@/js/http/api.js";
 import {useRoute, useRouter} from "vue-router";
+import Voice from "@/views/create/character/components/Voice.vue";
 
 const user = useUserStore()
 const router = useRouter()
@@ -16,9 +17,14 @@ const route = useRoute()
 const characterId = route.params.character_id
 const character = ref(null)
 
+const voices = ref([])
+const curVoiceId = ref(null)
+
+
 
 const photoRef = useTemplateRef('photo-ref')
 const nameRef = useTemplateRef('name-ref')
+const voiceRef = useTemplateRef('voice-ref')
 const profileRef = useTemplateRef('profile-ref')
 const backgroundImageRef = useTemplateRef('background-image-ref')
 const errorMessage = ref('')
@@ -33,6 +39,9 @@ onMounted(async ()=>{
     const data = res.data
     if(data.result === 'success'){
       character.value = data.character
+      voices.value = data.voices
+      curVoiceId.value = data.character.voice_id
+
     }
   }catch (e){
 
@@ -42,6 +51,7 @@ onMounted(async ()=>{
 async function handleUpdate(){
   const photo = photoRef.value.myPhoto
   const name = nameRef.value.myName?.trim()
+  const voice = voiceRef.value.myVoice
   const profile = profileRef.value.myProfile?.trim()
   const backgroundImage = backgroundImageRef.value.myBackgroundImage
   errorMessage.value = ''
@@ -50,6 +60,8 @@ async function handleUpdate(){
     errorMessage.value = '头像不能为空'
   } else if (!name) {
     errorMessage.value = '名字不能为空'
+  } else if (!voice) {
+    errorMessage.value = '音色不能为空'
   } else if (!profile) {
     errorMessage.value = '角色介绍不能为空'
   } else if (!backgroundImage) {
@@ -58,6 +70,7 @@ async function handleUpdate(){
     const formdata = new FormData()
     formdata.append('character_id',characterId)
     formdata.append('name',name)
+    formdata.append('voice_id', voice)
     formdata.append('profile',profile)
     if(photo !== character.value.photo){
        formdata.append('photo',base64ToFile(photo,'photo.png'))
@@ -93,6 +106,7 @@ async function handleUpdate(){
          <h3 class="text-lg font-bold my-4">更改角色</h3>
         <Photo ref="photo-ref" :photo="character.photo"/>
         <Name ref="name-ref" :name="character.name"/>
+        <Voice ref="voice-ref" :voices="voices" :curVoiceId="curVoiceId" />
         <Profile ref="profile-ref" :profile="character.profile"/>
         <BackgroundImage ref="background-image-ref" :background_image="character.background_image"/>
         <p v-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>

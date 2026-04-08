@@ -11,6 +11,7 @@ from web.views.create.character.update import UpdateCharacterApiView
 from web.views.ai_friend.get_list import GetListAiFriendAPIView
 from web.views.ai_friend.get_or_create import GetOrCreaterAiFriendsAPIView
 from web.views.ai_friend.remove import RemoveAiFriendAPIView
+from web.views.create.character.voice.get_list import GetVoiceListAPIView
 from web.views.friend.add_friend import AddFriendAPIView
 from web.views.friend.get_friend_list import GetFriendListAPIView
 from web.views.friend.messages import FriendMessagesAPIView
@@ -46,6 +47,7 @@ urlpatterns =[
     path('api/friend/get_friend_list/',GetFriendListAPIView.as_view()),
     path('api/friend/messages/',FriendMessagesAPIView.as_view()),
     path('api/ai_friend/messages/get_history/', GetHistoryAPIView.as_view()),
+    path('api/create/character/voice/get_list/', GetVoiceListAPIView.as_view()),
     # 因为有Daphne 采用下述异步方法 不在使用DRF
     # path('api/ai_friend/messages/chat/chat/',ai_message_chat_view), 这是语音未合成之前的代码
     path('api/ai_friend/messages/chat/chat/',ai_message_chat_tts_view), # 这是语音合成之后的代码

@@ -172,8 +172,8 @@ SIMPLE_JWT ={
     'AUTH_HEADER_TYPES':('Bearer',),
 
     # 为了纯ip访问 额外的配置
-    # 'AUTH_COOKIE_SECURE': False,   # 允许在 HTTP 环境下传输 Cookie (关键！)
-    # 'AUTH_COOKIE_SAMESITE': 'Lax', # 不要用 None，在 HTTP 下 None 会被浏览器直接拦截
+    'AUTH_COOKIE_SECURE': False,   # 允许在 HTTP 环境下传输 Cookie (关键！)
+    'AUTH_COOKIE_SAMESITE': 'Lax', # 不要用 None，在 HTTP 下 None 会被浏览器直接拦截
 }
 
 #跨域

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from web.models.aifriend import AIFriend, AIFriendMessage, SystemPrompt
-from web.models.character import Character
+from web.models.character import Character, Voice
 from web.models.conversation import Conversation
 from web.models.conversion_member import ConversationMember
 from web.models.friend import Friend
@@ -17,7 +17,9 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
-    raw_id_fields = ("author",)
+    raw_id_fields = ("author", "voice")
+
+admin.site.register(Voice)
 
 @admin.register(AIFriend)
 class AIFriendAdmin(admin.ModelAdmin):

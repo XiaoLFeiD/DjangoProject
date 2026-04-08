@@ -173,11 +173,12 @@ async def ai_message_chat_tts_view(request):
             data = json.loads(request.body)
             f_id, msg_text = data.get('friend_id'), data.get('message', '').strip()
             friend = AIFriend.objects.select_related('character').filter(pk=f_id, me__user=user).first()
-            return user, friend, msg_text
+            voice_id = friend.character.voice.voice_id
+            return user, friend, msg_text, voice_id
         except:
-            return None, None, None
+            return None, None, None, None
 
-    user, friend, message = await authenticate_and_get_data()
+    user, friend, message, voice_id = await authenticate_and_get_data()
     if not user: return JsonResponse({'detail': '身份认证失败'}, status=401)
     if not friend: return JsonResponse({'result': '好友不存在'}, status=404)
     if not message: return JsonResponse({'result': '消息不能为空'}, status=400)
@@ -194,6 +195,7 @@ async def ai_message_chat_tts_view(request):
         api_key = os.getenv('API_KEY')
         wss_url = os.getenv('WSS_URL')
         headers = {"Authorization": f"Bearer {api_key}"}
+
 
         full_output = ''
         full_usage = {}
@@ -238,13 +240,13 @@ async def ai_message_chat_tts_view(request):
                 async with websockets.connect(wss_url, additional_headers=headers) as ws:
                     # 初始化 TTS
                     await ws.send(json.dumps({
-                        "header": {"action": "run-task", "task_id": task_id, "streaming": "duplex"},
+                        "header": {"action": "run-task", "task_id": voice_id, "streaming": "duplex"},
                         "payload": {
                             "task_group": "audio", "task": "tts", "function": "SpeechSynthesizer",
                             "model": "cosyvoice-v3-flash",
                             "parameters": {
-                                "text_type": "PlainText", "voice": "longanyang", "format": "mp3",
-                                "sample_rate": 22050, "volume": 50, "rate": 1.25, "pitch": 1
+                                "text_type": "PlainText", "voice": voice_id, "format": "mp3",
+                                "sample_rate": 22050, "volume": 50, "rate": 1.75, "pitch": 1
                             },
                             "input": {}
                         }
